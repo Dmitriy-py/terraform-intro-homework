@@ -163,10 +163,11 @@ ef550265fc2e   657fdcd1c365         "/docker-entrypoint.…"   19 seconds ago   
 ### Вывод команды ` docker ps `
 
 ```docker
-
-### Вывод команды ` docker ps `
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+68d25694fd6b   657fdcd1c365         "/docker-entrypoint.…"   36 seconds ago   Up 34 seconds   0.0.0.0:9090->80/tcp                          hello_world
 
 ```
+
 
 
 
