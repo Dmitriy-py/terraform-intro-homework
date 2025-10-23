@@ -119,9 +119,42 @@ personal.auto.tfvars
 *   Конкретный ключ: ` result `
 *   Его значение: ` xWtBW2Uyr9B4JY10 `
 
+### Исправленный фрагмент кода файла ` main.tf `
+```terraform
 
+resource "random_password" "random_string" {
+  length      = 16
+  special     = false
+  min_upper   = 1
+  min_lower   = 1
+  min_numeric = 1
+}
 
+resource "docker_image" "nginx" { # ИСПРАВЛЕНИЕ 1: Добавлено имя ресурса "nginx"
+  name         = "nginx:latest"
+  keep_locally = true
+}
 
+resource "docker_container" "nginx_container" { # ИСПРАВЛЕНИЕ 2: Корректное имя ресурса
+  image = docker_image.nginx.image_id
+  name  = "example_${random_password.random_string.result}" # ИСПРАВЛЕНИЕ 3: Корректная ссылка на пароль
+
+  ports {
+    internal = 80
+    external = 9090
+  }
+}
+
+```
+
+### Вывод команды ` docker ps `
+
+```docker
+vm1@vm1-VirtualBox:~/ter-homeworks/01/src$ docker ps
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+ef550265fc2e   657fdcd1c365         "/docker-entrypoint.…"   19 seconds ago   Up 14 seconds   0.0.0.0:9090->80/tcp                          example_xWtBW2Uyr9B4JY10
+
+```
 
 
 
