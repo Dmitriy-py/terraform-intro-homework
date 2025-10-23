@@ -87,6 +87,31 @@ provider "registry.terraform.io/kreuzwerker/docker" {
 }
 ```
 
+### Вывод команды ` cat .gitignore `
+```terrafform
+# Local .terraform directories and files
+**/.terraform/*
+.terraform*
+
+!.terraformrc
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# own secret vars store.
+personal.auto.tfvars
+```
+
+Файл .gitignore определяет, какие файлы не должны попадать в систему контроля версий (Git). Если файл игнорируется Git, то он остается только на вашем локальном компьютере, и его можно безопасно использовать для хранения конфиденциальных данных (в данном контексте).
+
+Строка из ` .gitignore: `
+```terraform
+# own secret vars store.
+personal.auto.tfvars
+```
+Функция в Terraform: Файлы, заканчивающиеся на .auto.tfvars или .tfvars, автоматически считываются Terraform для предоставления значений переменных. Поскольку personal.auto.tfvars игнорируется Git, мы можем создать этот файл локально, поместить туда свои логины, пароли, ключи и токены, и быть уверенным, что они не будут случайно закоммичены и отправлены в публичный репозиторий.
+
 
 
 
