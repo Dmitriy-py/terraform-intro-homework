@@ -226,9 +226,118 @@ Docker-образ nginx:latest не был удален при выполнен�
 keep_locally (Optional, bool) If true, then the Docker image won’t be deleted on terraform destroy if it has not been used by any local container.
 
 
+## Задание 2*
 
+Создайте в облаке ВМ. Сделайте это через web-консоль, чтобы не слить по незнанию токен от облака в github(это тема следующей лекции). Если хотите - попробуйте сделать это через terraform, прочитав документацию yandex cloud. Используйте файл personal.auto.tfvars и гитигнор или иной, безопасный способ передачи токена!
+Подключитесь к ВМ по ssh и установите стек docker.
+Найдите в документации docker provider способ настроить подключение terraform на вашей рабочей станции к remote docker context вашей ВМ через ssh.
+Используя terraform и remote docker context, скачайте и запустите на вашей ВМ контейнер mysql:8 на порту 127.0.0.1:3306, передайте ENV-переменные. Сгенерируйте разные пароли через random_password и передайте их в контейнер, используя интерполяцию из примера с nginx.(name  = "example_${random_password.random_string.result}" , двойные кавычки и фигурные скобки обязательны!)
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${...}"
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - "MYSQL_PASSWORD=${...}"
+      - MYSQL_ROOT_HOST="%"
+Зайдите на вашу ВМ , подключитесь к контейнеру и проверьте наличие секретных env-переменных с помощью команды env. Запишите ваш финальный код в репозиторий.
 
+## Ответ:
 
+### Финальный код файла ` main.tf `
+
+```terraform
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0.1"
+    }
+    random = {
+      source = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+  required_version = ">=1.8.4"
+}
+
+provider "docker" {
+  host = "ssh://vm-2@84.201.168.101" # Рабочее SSH-подключение
+}
+
+# --- Задание 1. Генерация и Nginx ---
+resource "random_password" "random_string" {
+  length      = 16
+  special     = false
+  min_upper   = 1
+  min_lower   = 1
+  min_numeric = 1
+}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+
+resource "docker_container" "nginx_container" {
+  image = docker_image.nginx.image_id
+  name  = "hello_world"
+
+  ports {
+    internal = 80
+    external = 9090
+  }
+}
+
+# --- Задание 2*. MySQL ---
+resource "random_password" "mysql_root_password" {
+  length  = 16
+  special = true
+}
+
+resource "random_password" "mysql_user_password" {
+  length  = 16
+  special = true
+}
+
+resource "docker_image" "mysql_image" {
+  name = "mysql:8"
+}
+
+resource "docker_container" "mysql_db" {
+  name  = "mysql_wordpress_db"
+  image = docker_image.mysql_image.image_id
+  ports {
+    internal = 3306
+    external = 3306
+    ip       = "127.0.0.1"
+  }
+
+  env = [
+    "MYSQL_ROOT_PASSWORD=${random_password.mysql_root_password.result}",
+    "MYSQL_DATABASE=wordpress",
+    "MYSQL_USER=wordpress",
+    "MYSQL_PASSWORD=${random_password.mysql_user_password.result}",
+    "MYSQL_ROOT_HOST=%",
+  ]
+}
+```
+
+### Вывод команды на YC VM-2 ` docker exec -it mysql_wordpress_db env `
+
+```docker
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=de9eaf7217cb
+TERM=xterm
+MYSQL_ROOT_HOST=%
+MYSQL_ROOT_PASSWORD=fg3wv}9c?bkyu}lE
+MYSQL_PASSWORD=dh%gpWWzw>+E)EP<
+MYSQL_DATABASE=wordpress
+MYSQL_USER=wordpress
+GOSU_VERSION=1.19
+MYSQL_MAJOR=8.4
+MYSQL_VERSION=8.4.7-1.el9
+MYSQL_SHELL_VERSION=8.4.7-1.el9
+HOME=/root
+```
 
 
 
