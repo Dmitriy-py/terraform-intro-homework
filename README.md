@@ -88,6 +88,7 @@ provider "registry.terraform.io/kreuzwerker/docker" {
 ```
 
 ### Вывод команды ` cat .gitignore `
+
 ```terrafform
 # Local .terraform directories and files
 **/.terraform/*
