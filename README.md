@@ -10,7 +10,8 @@
 
 <img width="1920" height="1080" alt="Снимок экрана (1671)" src="https://github.com/user-attachments/assets/868a0a75-9480-474e-8379-55cb79360d58" />
 
-```
+### Вывод команды ` terraform init `
+```yaml
 Initializing the backend...
 Initializing provider plugins...
 - Finding kreuzwerker/docker versions matching "~> 3.0.1"...
