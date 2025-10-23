@@ -168,6 +168,20 @@ CONTAINER ID   IMAGE                COMMAND                  CREATED          ST
 
 ```
 
+### Содержимое ` terraform.tfstate: `
+```json
+{
+  "version": 4,
+  "terraform_version": "1.13.0",
+  "serial": 11,
+  "lineage": "0e3dd2a9-a40e-2e88-2a80-a514e0dbf301",
+  "outputs": {},
+  "resources": [],
+  "check_results": null
+}
+```
+Содержимое `resources: []` (пустой массив) подтверждает, что в файле состояния больше нет записей об управляемых ресурсах.
+
 
 
 
